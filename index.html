@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>React Demo List App</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.5.1/animate.min.css">
+    <script src="https://fb.me/react-0.14.7.min.js"></script>
+    <script src="https://fb.me/react-dom-0.14.7.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+  </head>
+  <body class="container">
+    <div id="the_containing_div" class="col-sm-6"></div>
+    <div id="div_with_options" class="col-sm-6"></div>
+
+    <script type="text/jsx">
+      var ListItem = React.createClass({
+        render: function() {
+          return (
+            <li>
+              <h4 className="animated bounceInRight">{ this.props.text }</h4>
+            </li>
+          );
+        }
+      });
+
+      var List = React.createClass({
+        render: function() {
+          var createItem = function(text, index) {
+            return <ListItem key={ index + text } text={ text } />;
+          };
+
+          return (<ul>{ this.props.items.map(createItem) }</ul>);
+        }
+      });
+
+      var ListManager = React.createClass({
+        getInitialState: function() {
+          return {
+            items: [],
+            newItemText:''
+          };
+        },
+        onChange: function(e) {
+          console.log(e.target.value);
+          this.setState({newItemText: e.target.value});
+        },
+        handleSubmit: function(e) {
+          e.preventDefault();
+          var currentItems = this.state.items;
+          currentItems.push(this.state.newItemText);
+          this.setState({ items: currentItems, newItemText: '' });
+        },
+        render: function() {
+          return (
+            <div style={{border: this.props.borderStyle}}>
+              <h3>{ this.props.title }</h3>
+              <p>{ this.props.description }</p>
+              <form onSubmit={ this.handleSubmit } className="form-inline">
+                <input onChange={ this.onChange } value={ this.state.newItemText } className="form-control"/>
+                <button className={ this.props.buttonStyle || "btn btn-success" }>Add</button>
+              </form>
+              <List items={ this.state.items }/>
+            </div>
+          )
+        }
+      });
+
+      // This is just a Javascript object with some properties, we are going to
+      // pass this into a component and it will become this.props
+      var options = {
+        title: 'this title is coming from the options variable',
+        description: 'React Demo for Cohort 12',
+        buttonStyle: 'btn btn-warning',
+        borderStyle: '2px solid pink;'
+      }
+
+      // Here we are creating an 'html element and passing an object of properties'
+      var element = React.createElement(ListManager, options);
+
+      // Here we render that element and attach it to another element in index.html
+      ReactDOM.render(element, document.getElementById('div_with_options'));
+
+      // We are simply rendering the top most component and all the child components
+      // will render because we nested them.
+      ReactDOM.render(
+        <ListManager
+          title='This Title is this.props.title'
+          description='data is being passed in as an attribute of the component'/>,
+        document.getElementById('the_containing_div')
+      );
+    </script>
+  </body>
+</html>
